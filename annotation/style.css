@@ -1,0 +1,17 @@
+body {
+	font-size: 20px;
+	color: #ff00ff;
+	text-align: center;
+	background-color: #000000
+}
+
+h1 {
+	text-decoration: overline;
+	text-transform: uppercase;
+	letter-spacing: 3px;
+}
+
+.lyrics {
+	padding-top: 30px;
+	word-spacing: 25px;
+}
