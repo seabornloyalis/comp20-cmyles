@@ -14,7 +14,39 @@
 <div id="lyrics"></div>
 
 <script>
-	// Complete this section and create a CSS file named style.css
+	function modifySubs() {
+		var subs = document.getElementById("lyrics");
+		var t = Math.floor(vid.currentTime)
+		if (t == 0 || t == 76)
+			subs.innerHTML = "";
+		else if (t == 9 || t == 16 || t == 59 || t == 67)
+			subs.innerHTML = "You've got me feelin' emotions"
+		else if (t == 13 || t == 63)
+			subs.innerHTML = "Deeper than I've ever dreamed of"
+		else if (t == 20 || t == 71)
+			subs.innerHTML = "Higher than the heavens above"
+
+		else if (t == 24)
+			subs.innerHTML = "I feel good, I feel nice"
+		else if (t == 29)
+			subs.innerHTML = "I've never felt so satisfied"
+		else if (t == 34)
+			subs.innerHTML = "I'm in love, I'm alive"
+		else if (t == 38)
+			subs.innerHTML = "Intoxicated, flyin' high"
+
+		else if (t == 44)
+			subs.innerHTML = "Feels like a dream"
+		else if (t == 48)
+			subs.innerHTML = "When you touch me tenderly"
+		else if (t == 52)
+			subs.innerHTML = "I don't know if it's real"
+		else if (t == 56)
+			subs.innerHTML = "But I like the way I feel inside"
+	}
+
+	var vid = document.getElementById("failvideo");
+	vid.addEventListener("timeupdate", modifySubs);
 </script>
 </body>
 </html>	
