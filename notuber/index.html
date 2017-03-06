@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <title>Totally Not Uber</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+    <link rel="stylesheet" href="style.css" />
+    
+    <script>
+      var myLat = 0;
+      var myLng = 0;
+      var request = new XMLHttpRequest();
+      var myLoc = new google.maps.LatLng(myLat, myLng);
+      var myName = "1ZTX8P2C";
+      var myOptions = {
+            zoom: 13, // The larger the zoom number, the bigger the zoom
+            center: myLoc,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+          };
+      var map;
+      var passenger;
+      var vehicles;
+      var infowindow = new google.maps.InfoWindow();
+      
+      function init()
+      {
+        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+        getMyLocation();
+      }
+      
+      function getMyLocation() {
+        if (navigator.geolocation) { // the navigator.geolocation object is supported on your browser
+          navigator.geolocation.getCurrentPosition(function(position) {
+            myLat = position.coords.latitude;
+            myLng = position.coords.longitude;
+            getVehicles();
+            renderMap();
+          });
+        }
+        else {
+          alert("Geolocation is not supported by your web browser.  What a shame!");
+        }
+      }
+
+      function renderMap()
+      {
+        myLoc = new google.maps.LatLng(myLat, myLng);
+        
+        // Update map and go there...
+        map.panTo(myLoc);
+  
+        // Create a passenger
+        passenger = new google.maps.passenger({
+          position: myLoc,
+          title: "Here I Am!"
+        });
+        passenger.setMap(map);
+          
+        // Open info window on click of passenger
+        google.maps.event.addListener(passenger, 'click', function() {
+          infowindow.setContent(passenger.title);
+          infowindow.open(map, passenger);
+        });
+      }
+
+      function requestVehicles(){
+        request.open("POST", "https://defense-in-derpth.herokuapp.com/submit", false);
+        request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        request.send("username="+myName+"&lat="+myLat+"&lng="+myLng);
+
+        console.log(request.responseXML);
+      }
+
+      
+    </script>
+  </head>
+  
+  <body onload="init()">
+    <div id="map_canvas"></div>
+  </body>
+</html>
