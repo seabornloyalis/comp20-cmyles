@@ -5,7 +5,7 @@
   <head>
     <title>Totally Not Uber</title>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=true&libraries=geometry"></script>
     <link rel="stylesheet" href="style.css" />
     
     <script>
@@ -21,7 +21,8 @@
           };
       var map;
       var passenger;
-      var vehicles;
+      var vehicles = [];
+      var mywindow = new google.maps.InfoWindow();
       var infowindow = new google.maps.InfoWindow();
       
       function init()
@@ -35,7 +36,7 @@
           navigator.geolocation.getCurrentPosition(function(position) {
             myLat = position.coords.latitude;
             myLng = position.coords.longitude;
-            getVehicles();
+            requestVehicles();
             renderMap();
           });
         }
@@ -52,28 +53,56 @@
         map.panTo(myLoc);
   
         // Create a passenger
-        passenger = new google.maps.passenger({
+        passenger = new google.maps.Marker({
           position: myLoc,
-          title: "Here I Am!"
+          title: myName
         });
         passenger.setMap(map);
           
         // Open info window on click of passenger
         google.maps.event.addListener(passenger, 'click', function() {
-          infowindow.setContent(passenger.title);
-          infowindow.open(map, passenger);
+          mywindow.setContent(passenger.title);
+          mywindow.open(map, passenger);
         });
       }
 
       function requestVehicles(){
-        request.open("POST", "https://defense-in-derpth.herokuapp.com/submit", false);
+        request.addEventListener("load", function() {
+          if (JSON.parse(this.responseText)['vehicles'] != null)
+            renderVehicles(JSON.parse(this.responseText)['vehicles']);
+        });
+        request.open("POST", "https://defense-in-derpth.herokuapp.com/submit", true);
         request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         request.send("username="+myName+"&lat="+myLat+"&lng="+myLng);
-
-        console.log(request.responseXML);
       }
 
-      
+      function renderVehicles(cars){
+        var tmpPos;
+        var tmpDis;
+        var v;
+        for (var i = 0; i < cars.length; i++) {
+          console.log(cars[i]);
+          tmpPos = new google.maps.LatLng(cars[i]['lat'], cars[i]['lng']);
+          tmpDis = google.maps.geometry.spherical.computeDistanceBetween(tmpPos, myLoc);
+          v = new google.maps.Marker({
+            position: tmpPos,
+            title: cars[i]['username']+' '+getMiles(tmpDis).toFixed(2)+'mi',
+            icon: 'black_car.png'
+          })
+
+          vehicles.push(v);
+          vehicles[i].setMap(map);
+
+          google.maps.event.addListener(vehicles[i], 'click', function() {
+            infowindow.setContent(this.title);
+            infowindow.open(map, this);
+          })
+        }
+      }
+      // found on stack overflow: http://stackoverflow.com/questions/20674439/how-to-convert-meter-to-miles
+      function getMiles(i) {
+        return i*0.000621371192;
+      }
     </script>
   </head>
   
