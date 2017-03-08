@@ -22,7 +22,7 @@
       var map;
       var passenger;
       var vehicles = [];
-      var mywindow = new google.maps.InfoWindow();
+      //var mywindow = new google.maps.InfoWindow();
       var infowindow = new google.maps.InfoWindow();
       
       function init()
@@ -55,14 +55,16 @@
         // Create a passenger
         passenger = new google.maps.Marker({
           position: myLoc,
-          title: myName
+          title: myName,
+          icon: 'giraffe_icon.png'
         });
         passenger.setMap(map);
           
         // Open info window on click of passenger
         google.maps.event.addListener(passenger, 'click', function() {
-          mywindow.setContent(passenger.title);
-          mywindow.open(map, passenger);
+          infowindow.setContent(passenger.title);
+          infowindow.setPosition(myLoc)
+          infowindow.open(map, passenger);
         });
       }
 
@@ -81,7 +83,6 @@
         var tmpDis;
         var v;
         for (var i = 0; i < cars.length; i++) {
-          console.log(cars[i]);
           tmpPos = new google.maps.LatLng(cars[i]['lat'], cars[i]['lng']);
           tmpDis = google.maps.geometry.spherical.computeDistanceBetween(tmpPos, myLoc);
           v = new google.maps.Marker({
@@ -95,6 +96,7 @@
 
           google.maps.event.addListener(vehicles[i], 'click', function() {
             infowindow.setContent(this.title);
+            infowindow.setPosition(tmpPos)
             infowindow.open(map, this);
           })
         }
