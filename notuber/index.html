@@ -21,8 +21,8 @@
             mapTypeId: google.maps.MapTypeId.ROADMAP
           };
       var map;
-      var passenger;
-      var vehicles = [];
+      var me;
+      var targets = [];
       //var mywindow = new google.maps.InfoWindow();
       var infowindow = new google.maps.InfoWindow();
       
@@ -37,7 +37,7 @@
           navigator.geolocation.getCurrentPosition(function(position) {
             myLat = position.coords.latitude;
             myLng = position.coords.longitude;
-            requestVehicles();
+            requestTargets();
             renderMap();
           });
         }
@@ -53,26 +53,27 @@
         // Update map and go there...
         map.panTo(myLoc);
   
-        // Create a passenger
-        passenger = new google.maps.Marker({
+        // Create a me
+        me = new google.maps.Marker({
           position: myLoc,
-          title: myName,
-          icon: 'giraffe_icon.png'
+          title: myName
         });
-        passenger.setMap(map);
+        me.setMap(map);
           
-        // Open info window on click of passenger
-        google.maps.event.addListener(passenger, 'click', function() {
-          infowindow.setContent(passenger.title);
+        // Open info window on click of me
+        google.maps.event.addListener(me, 'click', function() {
+          infowindow.setContent(me.title);
           infowindow.setPosition(myLoc)
-          infowindow.open(map, passenger);
+          infowindow.open(map, me);
         });
       }
 
-      function requestVehicles(){
+      function requestTargets(){
         request.addEventListener("load", function() {
           if (JSON.parse(this.responseText)['vehicles'] != null)
             renderVehicles(JSON.parse(this.responseText)['vehicles']);
+          else if (JSON.parse(this.responseText)['passengers'] != null)
+          	renderPassengers(JSON.parse(this.responseText)['passengers']);
         });
         request.open("POST", "https://defense-in-derpth.herokuapp.com/submit", true);
         request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -92,15 +93,42 @@
             icon: 'black_car.png'
           })
 
-          vehicles.push(v);
-          vehicles[i].setMap(map);
+          targets.push(v);
+          targets[i].setMap(map);
 
-          google.maps.event.addListener(vehicles[i], 'click', function() {
+          google.maps.event.addListener(targets[i], 'click', function() {
             infowindow.setContent(this.title);
             infowindow.setPosition(tmpPos)
             infowindow.open(map, this);
           })
         }
+
+        me.setIcon('giraffe_icon.png');
+      }
+
+      function renderPassengers(people){
+        var tmpPos;
+        var tmpDis;
+        var v;
+        for (var i = 0; i < people.length; i++) {
+          tmpPos = new google.maps.LatLng(people[i]['lat'], people[i]['lng']);
+          tmpDis = google.maps.geometry.spherical.computeDistanceBetween(tmpPos, myLoc);
+          v = new google.maps.Marker({
+            position: tmpPos,
+            title: people[i]['username']+' '+getMiles(tmpDis).toFixed(2)+'mi',
+            icon: 'giraffe_icon.png'
+          })
+
+          targets.push(v);
+          targets[i].setMap(map);
+
+          google.maps.event.addListener(targets[i], 'click', function() {
+            infowindow.setContent(this.title);
+            infowindow.setPosition(tmpPos)
+            infowindow.open(map, this);
+          })
+        }
+        me.setIcon('black_car.png');
       }
       // found on stack overflow: http://stackoverflow.com/questions/20674439/how-to-convert-meter-to-miles
       function getMiles(i) {
