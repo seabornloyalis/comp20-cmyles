@@ -75,7 +75,7 @@
           else if (JSON.parse(this.responseText)['passengers'] != null)
           	renderPassengers(JSON.parse(this.responseText)['passengers']);
         });
-        request.open("POST", "https://defense-in-derpth.herokuapp.com/submit", true);
+        request.open("POST", "https://whispering-ridge-49047.herokuapp.com/submit", true);
         request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         request.send("username="+myName+"&lat="+myLat+"&lng="+myLng);
       }
