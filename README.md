@@ -1,0 +1,5 @@
+1. This Git repository holds the work I did as part of Tufts Comp20: Web Programming class which I took in the Spring of 2017, during my senior year.
+2. My favorite assignment was assignment 3 (which is not actually held in this repo) because I enjoy server-side programming more than frontend and it really brought a lot of the idea of the class together. The annotation lab was also a lot of fun and interesting, but synchronizing the timing of the subs and video eventually became a tad tedious.
+3. I think I have grown a lot from the beginning of the course to the end. Prior to this course, I had built a website that used a server and database for a distributed database management systems class I took in London, but the lecturers for that class encouraged us to use very dated technologies (PHP and MySQL). It was tremendously helpful to learn some easier ways to build a website and to actually learn some principles of client-side development rather than teaching myself by hacking together scraps of code found online until it all works.
+4.
+5.
