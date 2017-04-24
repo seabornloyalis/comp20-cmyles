@@ -8,28 +8,54 @@
 
 <body>
 <h1> Security And Privacy Assessment of Jacob Jaffe's Uber Clone </h1>
+<h2> By Chad Myles </h2>
 <h3> Introduction </h3>
+<p>For this assignment, I needed to review Jacob Jaffe's <a href="https://infinite-coast-81361.herokuapp.com"> faux ride-sharing website </a> and document any security flaws or privacy problems I found. The website has three routes of access:</p>
+<ol>
+	<li> The index page, which lists all passengers in the database by timestamp </li>
+	<li> A /submit API, accessible by http POST, which recieves a username, lat (latitude), and lng (longitude) fields and returns a list of passengers, if the user is in the whitelist of vehicles, or a list of vehicles that have checked in within the last 5 minutes </li>
+	<li> A /vehicle.json API, accessible by http GET, which takes a username query parameter and returns the record for the vehicle with that username </li>
+</ol>
 
 <h3> Methodology </h3>
+<p>In order to penetration test the application, I used several techniques and tools. First, during the black-box phase of testing, in order to obtain a preliminary view of possible vulnerabilities, I examined the application for all instances where it takes in user input that could potentially be malicious. After outlining these potential means of entry, I sent malicious javascript, delineated with &lt; script &gt; tags, to each potentially vulnerable field to see if cross-site scripting would succeed. Next I sent MongoDB commands as input to see if MongoDB injection attacks would succeed. After exhausting these potential vulnerabilites, I then analyzed the various pages of the site for instances where they leaked more information than the assignment strictly required.</p>
+<p> Tools used include: </p>
+<ul>
+	<li>My client-side code, editing to send to the application's URL, to emulate what would be received by a website interacting with the /submit API</li>
+	<li><a href="https://www.getpostman.com/">Postman </a> for interacting easily with both the GET and POST methods of the API</li>
+	<li><a href="https://vivaldi.com/"> Vivaldi</a>, my personal browser of choice. Based on Chromium, the developer tools are functionally identical to those of Google Chrome</li>
+</ul>
+<p> All issues found were discovered during the black-box stage of testing. This was possible because, having implemented the website myself with nearly identical functionality, I had a good idea of where my own website was vulnerable as well as how the server side was likely built. This was further enabled by the fact that I assumed Jacob emulated <a href="https://github.com/tuftsdev/WebProgramming/tree/gh-pages/examples/nodejs/nodemongoapp">Ming Chow's example code </a> and that, being in the same course, Jacob and I learned similar techniques to build our websites.<p>
 
 <h3> Abstract of Findings </h3>
+<p>Through the penetration test, two types of problems were found: security vulnerabilites and privacy issues. The security issues found could allow an attacker to alter the page arbitrarily, causing it to redirect to another page, show arbitrary images instead of usernames, advertise malware, or just generally vandalize itself in any number of ways. However, nothing was found that could jeopardize the integrity of the database's data. The privacy issue found would allow anyone who visits the website's index page to track other users' movements as the connect with the website.</p>
 
 <h3> Issues Found </h3>
 <h5> Issue One: XSS on Index Page </h5>
 <img alt="Postman with script in the username field" src="xss_before.PNG"/>
 <img alt="Webpage with 'This has been hacked' alert" src="xss_after.PNG"/>
+<p></p>
 
 <h5> Issue Two: XSS on Map Page </h5>
 <img alt="Client script with img html in username field" src="xss2_before.PNG"/>
 <img alt="Map with picture of a fat giraffe in username position" src="xss2_after.PNG"/>
+<p></p>
 
 <h5> Issue Three: Privacy Issue on Index Page </h5>
 <img alt="Postman sending username to the app" src="privacy_before.PNG"/>
 <img alt="3 listings of same user, at different times and positions" src="privacy_after.PNG"/>
+<p></p>
 
 <h3> Conclusion </h3>
+<p></p>
 
 <h3> References </h3>
+<ul>
+	<li>The server was entirely Jacob Jaffe's work</li>
+	<li>Avita Sharma gave me the idea to XSS an image into the username field</li>
+	<li>Ming Chow taught me most of what I know about cross-site scripting and security in general</li>
+	<li>This <a href="https://xss-game.appspot.com/"> XSS game </a> helped inspire and hone my scripting </li>
+</ul>
 
 </body>
 </html>
