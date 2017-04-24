@@ -32,22 +32,30 @@
 
 <h3> Issues Found </h3>
 <h5> Issue One: XSS on Index Page </h5>
+<p>It is possible for a malicious attacker to exploit a cross-site scripting (XSS) vulnerability to distort the content of the index page. This can be accomplished by sending a Javascript script, bounded with the &lt;script&gt; tag, to as the username field, along with valid numbers for lat and lng, to the application's /submit POST route. This code then runs on a client's machine when they visit the index page because the unescaped username input is loaded by the client. This can also be used to place images in the username positions of the page, potentially slowing down the load times of the page or distributing pornography.</p>
 <img alt="Postman with script in the username field" src="xss_before.PNG"/>
 <img alt="Webpage with 'This has been hacked' alert" src="xss_after.PNG"/>
-<p></p>
+<p>This is a high severity isssue because it potentially allows an attacker to exploit the page for their own profit, distribute malware using the page, or completely vandalize its content. To resolve this issue, the server should search all user input for special characters, like &lt; and &gt;, and either remove them or simply discard any input that these characters appear in and inform the user. One way to achieve this in the code would be to include this line after line 34 (where the username is taken from user input in the code for the POST route):</p>
+<p>username = username.replace(/[^\w\s]/gi, '');</p>
 
 <h5> Issue Two: XSS on Map Page </h5>
+<p>Similarly, it is possible for a malicious attacker to exploit a XSS vulnerability to distort the content of the map page. This can be accomplished by sending a Javascript script or image, bounded with the appropriate HTML tag, to as the username field, along with valid numbers for lat and lng, to the application's /submit POST route. This code or image then runs on a client's machine when visit the map page and click on a marker to view a username because the unescaped username input is loaded by the client.</p>
 <img alt="Client script with img html in username field" src="xss2_before.PNG"/>
 <img alt="Map with picture of a fat giraffe in username position" src="xss2_after.PNG"/>
-<p></p>
+<p>The severity of this issue remains unchanged from the previous issue entry and the solutions remain the same.</p>
 
 <h5> Issue Three: Privacy Issue on Index Page </h5>
+<p>In addition to the XSS vulnerability, the index page has a pretty glaring privacy problem. Every instance of a username sending their location data to the server is saved and distributed publicly so the government, a stalker, or any other malicious entity can potentially track the location and movements of someone frequently using the application.</p>
 <img alt="Postman sending username to the app" src="privacy_before.PNG"/>
 <img alt="3 listings of same user, at different times and positions" src="privacy_after.PNG"/>
-<p></p>
+<p>I would rate this as a medium severity issue because it leaks a lot of unnecessary private information publicly and may endanger users. While Uber and many other companies collect and store this type of data, none of them release it all publicly. To remedy this issue, I recommend making this page only accessible within the developer's network, restricting access to those with credentials distributed by the developer, or eliminating the page altogether because all information is accessible to the developer via the database.<a href="https://tuftsdev.github.io/WebProgramming/assignments/a3.html">The assignment</a> requires that the app "shall display list of all the passengers in the database", but does not require that every check-in of every passenger be publicly viewable. This can be improved simply by replacing line 60 (part of the /submit route code), which reads:</p>
+<p>coll.insert(toInsert, function(error, saved) {</p>
+<p>with this code:</p>
+<p>coll.findOneAndReplace({"username" : toInsert.username}, toInsert, {upsert:true}, function(error,saved) {</p>
+<p>This change would cause the server to find the previous record of the username that is checking in, discard it, and replace it with the new one. While this does not completely solve the privacy issue, it does mitigate it while still fulfilling the assignment's specification.</p>
 
 <h3> Conclusion </h3>
-<p></p>
+<p>I hope I have clearly identified potential issues with the app as well explained their severity and some recommendations for what can be done to fix them. Additionally, if the application were to be further developed, I would highly recommend implementing a username/password login scheme or using something something like the Facebook plugin to handle it as usernames do not mean much when anyone can freely access them. Furthermore, the /vehicle.json API should also be behind a login page, otherwise an interested party could easily write a script to find the usernames and locations of all the app's drivers. Overall, the app exposes several XSS vulnerabilities and too much user data, important issues that should be fixed, but at least at this time the server's data seems secure and safe from injection attacks.</p>
 
 <h3> References </h3>
 <ul>
